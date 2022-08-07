@@ -46,39 +46,45 @@ const FilterDialog: React.FC<FilterDialogProps> = (
 
       <Divider color="black" />
 
-      <View style={{flexDirection: 'column', marginTop: 15}}>
-        <Text style={{alignSelf: 'center', marginBottom: 5}}>FROM</Text>
-        <Button onPress={() => setShowFromDate(true)} radius={8} type="outline">
-          <Icon
-            containerStyle={{
-              left: 7,
-              position: 'absolute',
-            }}
-            name="date-range"
-            color="steelblue"
-          />
-          {fromDate.toDateString()}
-        </Button>
-      </View>
-
-      <View style={{flexDirection: 'column', marginTop: 5}}>
-        <Text style={{alignSelf: 'center', marginBottom: 5}}>TO</Text>
-        <Button
-          color="secondary"
-          onPress={() => setShowToDate(true)}
-          radius={8}
-          type="outline">
-          <Icon
-            containerStyle={{
-              left: 7,
-              position: 'absolute',
-            }}
-            name="date-range"
-            color="steelblue"
-          />
-          {toDate.toDateString()}
-        </Button>
-      </View>
+      {!showFromDate && !showToDate && (
+        <View style={{flexDirection: 'column', marginTop: 15}}>
+          <Text style={{alignSelf: 'center', marginBottom: 5}}>FROM</Text>
+          <Button
+            onPress={() => setShowFromDate(true)}
+            radius={8}
+            type="outline">
+            <Icon
+              containerStyle={{
+                left: 7,
+                position: 'absolute',
+              }}
+              name="date-range"
+              color="steelblue"
+            />
+            {fromDate.toDateString()}
+          </Button>
+        </View>
+      )}
+      {!showFromDate && !showToDate && (
+        <View style={{flexDirection: 'column', marginTop: 5}}>
+          <Text style={{alignSelf: 'center', marginBottom: 5}}>TO</Text>
+          <Button
+            color="secondary"
+            onPress={() => setShowToDate(true)}
+            radius={8}
+            type="outline">
+            <Icon
+              containerStyle={{
+                left: 7,
+                position: 'absolute',
+              }}
+              name="date-range"
+              color="steelblue"
+            />
+            {toDate.toDateString()}
+          </Button>
+        </View>
+      )}
 
       {showFromDate && (
         <DateTimePicker
