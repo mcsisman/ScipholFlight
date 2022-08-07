@@ -73,7 +73,7 @@ const Flights: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, {marginBottom: tabBarHeight - 8}]}>
+    <SafeAreaView style={[styles.container, {marginBottom: tabBarHeight}]}>
       <FlightListHeader width={WINDOW_WIDTH} height={WINDOW_HEIGHT / 15} />
       <Divider color={'black'} />
 
