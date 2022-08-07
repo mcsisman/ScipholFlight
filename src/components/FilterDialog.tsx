@@ -1,7 +1,7 @@
 import React, {useState, type PropsWithChildren} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {Dialog, Button, Icon, Divider} from '@rneui/themed';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, Platform} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Text} from '@rneui/base';
 
@@ -46,9 +46,9 @@ const FilterDialog: React.FC<FilterDialogProps> = (
 
       <Divider color="black" />
 
-      {!showFromDate && !showToDate && (
-        <View style={{flexDirection: 'column', marginTop: 15}}>
-          <Text style={{alignSelf: 'center', marginBottom: 5}}>FROM</Text>
+      <View style={{flexDirection: 'column', marginTop: 15}}>
+        <Text style={{alignSelf: 'center', marginBottom: 5}}>FROM</Text>
+        {Platform.OS == 'android' && (
           <Button
             onPress={() => setShowFromDate(true)}
             radius={8}
@@ -63,11 +63,12 @@ const FilterDialog: React.FC<FilterDialogProps> = (
             />
             {fromDate.toDateString()}
           </Button>
-        </View>
-      )}
-      {!showFromDate && !showToDate && (
-        <View style={{flexDirection: 'column', marginTop: 5}}>
-          <Text style={{alignSelf: 'center', marginBottom: 5}}>TO</Text>
+        )}
+      </View>
+
+      <View style={{flexDirection: 'column', marginTop: 5}}>
+        <Text style={{alignSelf: 'center', marginBottom: 5}}>TO</Text>
+        {Platform.OS == 'android' && (
           <Button
             color="secondary"
             onPress={() => setShowToDate(true)}
@@ -83,10 +84,10 @@ const FilterDialog: React.FC<FilterDialogProps> = (
             />
             {toDate.toDateString()}
           </Button>
-        </View>
-      )}
+        )}
+      </View>
 
-      {showFromDate && (
+      {(showFromDate || Platform.OS == 'ios') && (
         <DateTimePicker
           testID="dateTimePickerFrom"
           value={fromDate}
@@ -97,7 +98,7 @@ const FilterDialog: React.FC<FilterDialogProps> = (
           }}
         />
       )}
-      {showToDate && (
+      {(showToDate || Platform.OS == 'ios') && (
         <DateTimePicker
           testID="dateTimePickerTo"
           value={toDate}
