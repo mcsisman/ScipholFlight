@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {Divider, SpeedDial} from '@rneui/themed';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {
   FLIGHT_APP_KEY,
   FLIGHT_APP_ID,
@@ -18,7 +17,7 @@ import {
   StyleSheet,
   Text,
   ListRenderItem,
-  View,
+  SafeAreaView,
   FlatList,
 } from 'react-native';
 

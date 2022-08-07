@@ -25,8 +25,7 @@ const FlightListHeader: React.FC<FlightListHeaderProps> = (
       </View>
       <Divider orientation="vertical" />
       <View style={styles.dateTimeContainer}>
-        <Text>{'Date'} </Text>
-        <Text>{'Time'} </Text>
+        <Text>{'Date & Time'} </Text>
       </View>
       <Divider orientation="vertical" />
       <View style={styles.detailsButton}>
