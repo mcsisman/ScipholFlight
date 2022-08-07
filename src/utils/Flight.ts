@@ -1,0 +1,36 @@
+export class Flight {
+  lastUpdatedAt: string = '';
+  actualLandingTime: string = '';
+  actualOffBlockTime: string = '';
+  aircraftRegistration: string = '';
+  aircraftType: object = {};
+  baggageClaim: object = {};
+  checkinAllocations: object = {};
+  codeshares: object = {};
+  estimatedLandingTime: string = '';
+  expectedTimeBoarding: string = '';
+  expectedTimeGateClosing: string = '';
+  expectedTimeGateOpen: string = '';
+  expectedTimeOnBelt: string = '';
+  expectedSecurityFilter: string = '';
+  flightDirection: string = '';
+  flightName: string = '';
+  flightNumber: number = 0;
+  gate: string = '';
+  pier: string = '';
+  id: string = '';
+  mainFlight: string = '';
+  prefixIATA: string = '';
+  prefixICAO: string = '';
+  airlineCode: number = 0;
+  publicEstimatedOffBlockTime: string = '';
+  publicFlightState: object = {};
+  route: object = {};
+  scheduleDateTime: string = '';
+  scheduleDate: string = '';
+  scheduleTime: string = '';
+  serviceType: string = '';
+  terminal: number = 0;
+  transferPositions: object = {};
+  schemaVersion: string = '';
+}
