@@ -48,7 +48,13 @@ const FilterDialog: React.FC<FilterDialogProps> = (
 
       <View
         style={{flexDirection: 'column', marginTop: 15, alignItems: 'stretch'}}>
-        <Text style={{alignSelf: 'center', marginBottom: 5}}>FROM</Text>
+        <Text
+          style={{
+            alignSelf: Platform.OS == 'ios' ? 'flex-start' : 'center',
+            marginBottom: 5,
+          }}>
+          FROM
+        </Text>
         {(showFromDate || Platform.OS == 'ios') && (
           <DateTimePicker
             style={{}}
@@ -81,7 +87,13 @@ const FilterDialog: React.FC<FilterDialogProps> = (
 
       <View
         style={{flexDirection: 'column', marginTop: 5, alignItems: 'stretch'}}>
-        <Text style={{alignSelf: 'center', marginBottom: 5}}>TO</Text>
+        <Text
+          style={{
+            alignSelf: Platform.OS == 'ios' ? 'flex-start' : 'center',
+            marginBottom: 5,
+          }}>
+          TO
+        </Text>
         {(showToDate || Platform.OS == 'ios') && (
           <DateTimePicker
             testID="dateTimePickerTo"
