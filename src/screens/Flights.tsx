@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {Divider, SpeedDial} from '@rneui/themed';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {
   FLIGHT_APP_KEY,
   FLIGHT_APP_ID,
@@ -13,7 +14,6 @@ import {Flight} from '../utils/Flight';
 import FilterDialog from '../components/FilterDialog';
 
 import {
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
@@ -62,7 +62,7 @@ const Flights: React.FC = () => {
     return (
       <FlightListItem
         width={WINDOW_WIDTH}
-        height={WINDOW_HEIGHT / 10}
+        height={WINDOW_HEIGHT / 12}
         flightDirection={flightList[item.index].flightDirection}
         flightName={flightList[item.index].flightName}
         flightNumber={flightList[item.index].flightNumber.toString()}
@@ -73,7 +73,7 @@ const Flights: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, {marginBottom: tabBarHeight}]}>
+    <SafeAreaView style={[styles.container, {marginBottom: tabBarHeight - 8}]}>
       <FlightListHeader width={WINDOW_WIDTH} height={WINDOW_HEIGHT / 15} />
       <Divider color={'black'} />
 
@@ -102,7 +102,6 @@ const Flights: React.FC = () => {
           }}
         />
         <SpeedDial.Action
-          title={'QqqwdqwdqsR'}
           color="steelblue"
           icon={{name: 'qr-code-scanner', color: 'white'}}
           onPress={() => console.log('Delete Something')}
@@ -120,7 +119,6 @@ const Flights: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    display: 'flex',
   },
 });
 
