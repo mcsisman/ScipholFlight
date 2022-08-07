@@ -57,7 +57,7 @@ const FilterDialog: React.FC<FilterDialogProps> = (
             name="date-range"
             color="steelblue"
           />
-          {'from: ' + fromDate.toDateString()}
+          {fromDate.toDateString()}
         </Button>
       </View>
 
@@ -76,7 +76,7 @@ const FilterDialog: React.FC<FilterDialogProps> = (
             name="date-range"
             color="steelblue"
           />
-          {'to: ' + toDate.toDateString()}
+          {toDate.toDateString()}
         </Button>
       </View>
 

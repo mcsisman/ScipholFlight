@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {FAB, Divider, Dialog} from '@rneui/themed';
+import {Divider, SpeedDial} from '@rneui/themed';
 import {
   FLIGHT_APP_KEY,
   FLIGHT_APP_ID,
@@ -26,6 +26,7 @@ const Flights: React.FC = () => {
   const [flightList, setFlightList] = useState<Flight[]>([]);
   const tabBarHeight = useBottomTabBarHeight();
   const [filterDialogVisible, setFilterDialogVisible] = useState(false);
+  const [speedDialOpen, setSpeedDialOpen] = React.useState(false);
   const toggleFilterDialog = () => {
     setFilterDialogVisible(!filterDialogVisible);
     return '';
@@ -72,7 +73,7 @@ const Flights: React.FC = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, {paddingBottom: tabBarHeight}]}>
+    <SafeAreaView style={[styles.container, {marginBottom: tabBarHeight - 8}]}>
       <FlightListHeader width={WINDOW_WIDTH} height={WINDOW_HEIGHT / 15} />
       <Divider color={'black'} />
 
@@ -85,17 +86,29 @@ const Flights: React.FC = () => {
         keyExtractor={item => item.id}
       />
 
-      <FAB
-        style={[styles.QRButton, {paddingBottom: tabBarHeight}]}
-        color={'steelblue'}
-        icon={{name: 'qr-code-scanner', color: 'white'}}
-      />
-      <FAB
-        onPress={toggleFilterDialog}
-        style={[styles.filterButton, {paddingBottom: tabBarHeight}]}
-        color={'steelblue'}
-        icon={{name: 'filter-list', color: 'white'}}
-      />
+      <SpeedDial
+        color="steelblue"
+        isOpen={speedDialOpen}
+        icon={{name: 'edit', color: 'white'}}
+        openIcon={{name: 'close', color: 'white'}}
+        onOpen={() => setSpeedDialOpen(!speedDialOpen)}
+        onClose={() => setSpeedDialOpen(!speedDialOpen)}>
+        <SpeedDial.Action
+          color="steelblue"
+          icon={{name: 'filter-list', color: 'white'}}
+          onPress={() => {
+            toggleFilterDialog();
+            setSpeedDialOpen(!speedDialOpen);
+          }}
+        />
+        <SpeedDial.Action
+          title={'QqqwdqwdqsR'}
+          color="steelblue"
+          icon={{name: 'qr-code-scanner', color: 'white'}}
+          onPress={() => console.log('Delete Something')}
+        />
+      </SpeedDial>
+
       <FilterDialog
         isVisible={filterDialogVisible}
         onBackdropPress={() => toggleFilterDialog()}
@@ -108,18 +121,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     display: 'flex',
-  },
-  QRButton: {
-    left: 25,
-    alignSelf: 'center',
-    position: 'absolute',
-    bottom: 5,
-  },
-  filterButton: {
-    right: 25,
-    alignSelf: 'center',
-    position: 'absolute',
-    bottom: 5,
   },
 });
 
