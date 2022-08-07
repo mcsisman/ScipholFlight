@@ -48,6 +48,17 @@ const FilterDialog: React.FC<FilterDialogProps> = (
 
       <View style={{flexDirection: 'column', marginTop: 15}}>
         <Text style={{alignSelf: 'center', marginBottom: 5}}>FROM</Text>
+        {(showFromDate || Platform.OS == 'ios') && (
+          <DateTimePicker
+            testID="dateTimePickerFrom"
+            value={fromDate}
+            mode={'date'}
+            onChange={(event, date) => {
+              setShowFromDate(false);
+              setFromDate(date != undefined ? date : new Date());
+            }}
+          />
+        )}
         {Platform.OS == 'android' && (
           <Button
             onPress={() => setShowFromDate(true)}
@@ -68,6 +79,17 @@ const FilterDialog: React.FC<FilterDialogProps> = (
 
       <View style={{flexDirection: 'column', marginTop: 5}}>
         <Text style={{alignSelf: 'center', marginBottom: 5}}>TO</Text>
+        {(showToDate || Platform.OS == 'ios') && (
+          <DateTimePicker
+            testID="dateTimePickerTo"
+            value={toDate}
+            mode={'date'}
+            onChange={(event, date) => {
+              setShowToDate(false);
+              setToDate(date != undefined ? date : new Date());
+            }}
+          />
+        )}
         {Platform.OS == 'android' && (
           <Button
             color="secondary"
@@ -86,29 +108,6 @@ const FilterDialog: React.FC<FilterDialogProps> = (
           </Button>
         )}
       </View>
-
-      {(showFromDate || Platform.OS == 'ios') && (
-        <DateTimePicker
-          testID="dateTimePickerFrom"
-          value={fromDate}
-          mode={'date'}
-          onChange={(event, date) => {
-            setShowFromDate(false);
-            setFromDate(date != undefined ? date : new Date());
-          }}
-        />
-      )}
-      {(showToDate || Platform.OS == 'ios') && (
-        <DateTimePicker
-          testID="dateTimePickerTo"
-          value={toDate}
-          mode={'date'}
-          onChange={(event, date) => {
-            setShowToDate(false);
-            setToDate(date != undefined ? date : new Date());
-          }}
-        />
-      )}
     </Dialog>
   );
 };
