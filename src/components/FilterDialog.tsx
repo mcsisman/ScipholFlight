@@ -88,7 +88,7 @@ const FilterDialog: React.FC<FilterDialogProps> = (
 
       {showFromDate && (
         <DateTimePicker
-          display="spinner"
+          style={{alignSelf: 'center'}}
           testID="dateTimePickerFrom"
           value={fromDate}
           mode={'date'}
@@ -100,6 +100,7 @@ const FilterDialog: React.FC<FilterDialogProps> = (
       )}
       {showToDate && (
         <DateTimePicker
+          style={{alignSelf: 'center'}}
           testID="dateTimePickerTo"
           value={toDate}
           mode={'date'}
