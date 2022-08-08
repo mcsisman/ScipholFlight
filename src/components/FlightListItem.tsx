@@ -9,8 +9,8 @@ import {
   View,
 } from 'react-native';
 interface FlightListItemProps {
-  height: number;
-  width: number;
+  height?: number;
+  width?: number;
   flightDirection: string;
   flightName: string;
   flightNumber: string;
@@ -29,13 +29,11 @@ const FlightListItem: React.FC<FlightListItemProps> = (
     console.log('ON PRESS DETAILS');
     console.log(props.flightNumber);
   };
-
-  console.log('item: ' + props.flightNumber);
   return (
     <TouchableOpacity
       onPress={onPressDetails}
       activeOpacity={1}
-      style={[styles.container, {height: props.height, width: props.width}]}>
+      style={[styles.container]}>
       <View style={styles.directionContainer}>
         <MaterialIcons
           name={
@@ -63,7 +61,7 @@ const FlightListItem: React.FC<FlightListItemProps> = (
         onPress={onPressBook}
         style={styles.detailsButton}>
         <MaterialIcons
-          name={props.flightDirection === 'D' ? 'add-shopping-cart' : ''}
+          name={'add-shopping-cart'}
           size={25}
           color={'cadetblue'}
         />
@@ -74,7 +72,7 @@ const FlightListItem: React.FC<FlightListItemProps> = (
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',

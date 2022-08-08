@@ -1,6 +1,6 @@
 import React, {useState, type PropsWithChildren} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
-import {Dialog, Button, Icon, Divider} from '@rneui/themed';
+import {Dialog, Button, Icon, Divider, FAB} from '@rneui/themed';
 import {StyleSheet, View, Platform} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Text} from '@rneui/base';
@@ -8,12 +8,13 @@ import {Text} from '@rneui/base';
 interface FilterDialogProps {
   isVisible: boolean;
   onBackdropPress(): string;
+  onPressSearch(flightDirection: string, fromDate: Date, toDate: Date): string;
 }
 
 const FilterDialog: React.FC<FilterDialogProps> = (
   props: FilterDialogProps,
 ) => {
-  const [value, setValue] = useState(null);
+  const [flightDirection, setFlightDirection] = useState('');
   const [isFocus, setIsFocus] = useState(false);
   const [fromDate, setFromDate] = useState(new Date());
   const [showFromDate, setShowFromDate] = useState(false);
@@ -35,11 +36,11 @@ const FilterDialog: React.FC<FilterDialogProps> = (
         labelField="label"
         valueField="value"
         placeholder={!isFocus ? 'ChooseDirection' : '...'}
-        value={value}
+        value={flightDirection}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
         onChange={item => {
-          setValue(item.value);
+          setFlightDirection(item.value);
           setIsFocus(false);
         }}
       />
@@ -86,7 +87,12 @@ const FilterDialog: React.FC<FilterDialogProps> = (
       </View>
 
       <View
-        style={{flexDirection: 'column', marginTop: 5, alignItems: 'stretch'}}>
+        style={{
+          flexDirection: 'column',
+          marginTop: 5,
+          marginBottom: 15,
+          alignItems: 'stretch',
+        }}>
         <Text
           style={{
             alignSelf: Platform.OS == 'ios' ? 'flex-start' : 'center',
@@ -123,6 +129,18 @@ const FilterDialog: React.FC<FilterDialogProps> = (
           </Button>
         )}
       </View>
+
+      <Divider color="black" />
+
+      <FAB
+        onPress={() =>
+          props.onPressSearch(flightDirection.substring(0, 1), fromDate, toDate)
+        }
+        color="steelblue"
+        style={{marginTop: 15}}
+        icon={{name: 'search', color: 'white'}}
+        size="small"
+      />
     </Dialog>
   );
 };

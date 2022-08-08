@@ -1,6 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {Divider, SpeedDial} from '@rneui/themed';
+import {Divider} from '@rneui/themed';
+import {convertDateToYYMMDD} from '../utils/DateHelper';
+import ActionMenu from '../components/ActionMenu';
+import {getRequestURL, Request} from '../utils/FlightRequest';
+import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
 import {
   FLIGHT_APP_KEY,
   FLIGHT_APP_ID,
@@ -10,32 +14,61 @@ import {
 import FlightListItem from '../components/FlightListItem';
 import FlightListHeader from '../components/FlightListHeader';
 import {Flight} from '../utils/Flight';
-import FilterDialog from '../components/FilterDialog';
 
-import {
-  StatusBar,
-  StyleSheet,
-  Text,
-  ListRenderItem,
-  SafeAreaView,
-  FlatList,
-} from 'react-native';
+import {StyleSheet, SafeAreaView} from 'react-native';
 
 const Flights: React.FC = () => {
-  const [flightList, setFlightList] = useState<Flight[]>([]);
+  console.log('RE-RENDER');
   const tabBarHeight = useBottomTabBarHeight();
-  const [filterDialogVisible, setFilterDialogVisible] = useState(false);
-  const [speedDialOpen, setSpeedDialOpen] = React.useState(false);
-  const toggleFilterDialog = () => {
-    setFilterDialogVisible(!filterDialogVisible);
+
+  const [flightList, setFlightList] = useState<Flight[]>([]);
+  const [requestParams, setRequestParams] = useState<Request>({});
+
+  var dataProvider: DataProvider = new DataProvider(
+    (r1, r2) => r1 !== r2,
+  ).cloneWithRows(flightList);
+
+  //useEffect(() => fetchFlightList(getRequestURL(requestParams)), []);
+
+  const layoutProvider = new LayoutProvider(
+    i => {
+      return i;
+    },
+    (type, dim) => {
+      switch (type) {
+        default:
+          dim.width = WINDOW_WIDTH;
+          dim.height = WINDOW_HEIGHT / 12;
+      }
+    },
+  );
+
+  const onPressSearch = (
+    flightDirection: string,
+    fromDate: Date,
+    toDate: Date,
+  ) => {
+    requestParams.flightDirection = flightDirection;
+    requestParams.page = '0';
+    requestParams.fromScheduleDate = convertDateToYYMMDD(fromDate);
+    requestParams.toScheduleDate = convertDateToYYMMDD(toDate);
+    setFlightList([]);
+    fetchFlightList(getRequestURL(requestParams));
     return '';
   };
-  const testApi = () => {
-    const data = {flightDirection: 'D', page: '0'};
-    let URL: string = 'https://api.schiphol.nl/public-flights/flights?';
-    URL += 'flightDirection=' + encodeURIComponent(data.flightDirection);
-    URL += '&page=' + encodeURIComponent(data.page);
+
+  const fetchFlightList = (URL: string) => {
     console.log('URL:' + URL);
+
+    if (URL == '') {
+      dataProvider = new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(
+        flightList,
+      );
+      setFlightList(flightList);
+      return;
+    }
+
+    let links = '';
     fetch(URL, {
       method: 'GET',
       headers: {
@@ -46,77 +79,66 @@ const Flights: React.FC = () => {
         ResourceVersion: 'v4',
       },
     })
-      .then(response => response.json())
+      .then(response => {
+        links = response.headers.get('link') as string;
+        URL = getNextURL(links);
+        return response.json();
+      })
       .then(data => {
-        setFlightList(data.flights);
-        console.log('data arrived');
-        //console.log(data.flights[0]);
+        flightList.push(...data.flights);
+        fetchFlightList(URL);
       })
       .catch(error => console.log('err:' + error));
   };
 
-  useEffect(() => testApi(), []);
+  const getNextURL = (links: string) => {
+    let linkArr;
+    linkArr = links?.split(', ');
+    let newURL = '';
+    linkArr?.map((element: string) => {
+      if (element.includes('next')) {
+        newURL = element.substring(
+          element.indexOf('<') + 1,
+          element.indexOf('>'),
+        );
+      }
+    });
+    return newURL;
+  };
 
-  const renderItem: ListRenderItem<Flight> = item => {
+  const rowRenderer = (type: any, data: Flight) => {
     return (
       <FlightListItem
-        width={WINDOW_WIDTH}
         height={WINDOW_HEIGHT / 12}
-        flightDirection={flightList[item.index].flightDirection}
-        flightName={flightList[item.index].flightName}
-        flightNumber={flightList[item.index].flightNumber.toString()}
-        scheduleDate={flightList[item.index].scheduleDate}
-        scheduleTime={flightList[item.index].scheduleTime}
+        width={WINDOW_WIDTH}
+        flightDirection={data.flightDirection}
+        flightName={data.flightName}
+        flightNumber={data.flightNumber.toString()}
+        scheduleDate={data.scheduleDate}
+        scheduleTime={data.scheduleTime}
       />
     );
   };
-
   return (
-    <SafeAreaView style={[styles.container, {marginBottom: tabBarHeight - 8}]}>
+    <SafeAreaView style={styles.container}>
       <FlightListHeader width={WINDOW_WIDTH} height={WINDOW_HEIGHT / 15} />
       <Divider color={'black'} />
-
-      <FlatList
-        data={flightList}
-        renderItem={renderItem}
-        ItemSeparatorComponent={() => (
-          <Divider inset={true} insetType={'right'} color={'steelblue'} />
-        )}
-        keyExtractor={item => item.id}
-      />
-
-      <SpeedDial
-        color="steelblue"
-        isOpen={speedDialOpen}
-        icon={{name: 'edit', color: 'white'}}
-        openIcon={{name: 'close', color: 'white'}}
-        onOpen={() => setSpeedDialOpen(!speedDialOpen)}
-        onClose={() => setSpeedDialOpen(!speedDialOpen)}>
-        <SpeedDial.Action
-          color="steelblue"
-          icon={{name: 'filter-list', color: 'white'}}
-          onPress={() => {
-            toggleFilterDialog();
-            setSpeedDialOpen(!speedDialOpen);
-          }}
+      {dataProvider.getSize() != 0 && (
+        <RecyclerListView
+          style={{flex: 1}}
+          layoutProvider={layoutProvider}
+          dataProvider={dataProvider}
+          rowRenderer={rowRenderer}
         />
-        <SpeedDial.Action
-          color="steelblue"
-          icon={{name: 'qr-code-scanner', color: 'white'}}
-          onPress={() => console.log('Delete Something')}
-        />
-      </SpeedDial>
-
-      <FilterDialog
-        isVisible={filterDialogVisible}
-        onBackdropPress={() => toggleFilterDialog()}
-      />
+      )}
+      <ActionMenu onPressSearch={onPressSearch} />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     flexDirection: 'column',
   },
 });
