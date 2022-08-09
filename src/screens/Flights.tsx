@@ -5,6 +5,8 @@ import ActionMenu from '../components/ActionMenu';
 import BookingDialog from '../components/BookingDialog';
 import {getRequestURL, getNextURL, getRequestObj} from '../utils/FlightRequest';
 import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
+import QRScannerDialog from '../components/QRScannerDialog';
+
 import {
   FLIGHT_APP_KEY,
   FLIGHT_APP_ID,
@@ -27,6 +29,7 @@ const Flights: React.FC = () => {
   });
   const [bookingIsVisible, setBookingIsVisible] = useState(false);
   const [flightList, setFlightList] = useState<Flight[]>([]);
+  const [QRScannerIsVisible, setQRScannerVisible] = useState(false);
 
   var dataProvider: DataProvider = new DataProvider(
     (r1, r2) => r1 !== r2,
@@ -35,6 +38,11 @@ const Flights: React.FC = () => {
   const toggleBookingVisibility = () => {
     setBookingIsVisible(!bookingIsVisible);
   };
+
+  const toggleQRScannerVisibility = () => {
+    setQRScannerVisible(!QRScannerIsVisible);
+  };
+
   const layoutProvider = new LayoutProvider(
     i => {
       return i;
@@ -128,13 +136,21 @@ const Flights: React.FC = () => {
           rowRenderer={rowRenderer}
         />
       )}
-      <ActionMenu onPressSearch={onPressSearch} />
+      <ActionMenu
+        onPressQRButton={() => setQRScannerVisible(true)}
+        onPressSearch={onPressSearch}
+      />
       <BookingDialog
         flightName={bookingData.flightName}
         scheduleDate={bookingData.flightDate}
         scheduleTime={bookingData.flightTime}
         isVisible={bookingIsVisible}
-        onBackdropPress={() => toggleBookingVisibility()}
+        onBackdropPress={toggleBookingVisibility}
+      />
+
+      <QRScannerDialog
+        isVisible={QRScannerIsVisible}
+        onBackdropPress={toggleQRScannerVisibility}
       />
     </SafeAreaView>
   );

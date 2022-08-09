@@ -2,7 +2,7 @@ import React, {useState, type PropsWithChildren} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {Dialog, Button, Divider, Input} from '@rneui/themed';
 import {Alert, StyleSheet, Text, View} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {storeData, getData} from '../utils/LocalStorage';
 import QRCode from 'react-native-qrcode-svg';
 
 interface BookingDialogProps {
@@ -30,41 +30,43 @@ const BookingDialog: React.FC<BookingDialogProps> = (
 
   const dropdownData = seatArray(100);
   const onPressBookingComplete = async () => {
-    let arr = await AsyncStorage.getAllKeys();
-    (await arr).forEach(element => console.log('lement:' + element));
+    let myFlightList = await getData('myFlights');
     if (name === '' || selectedSeat === -1) {
       Alert.alert('', 'Please fill every field!');
       return;
     }
-    if (await getData(props.flightName)) {
-      Alert.alert('', 'You already booked this flight!');
+    let flag: boolean = false;
+    myFlightList?.forEach((element: any) => {
+      if (
+        element.flightName == props.flightName &&
+        element.seat == selectedSeat
+      )
+        flag = true;
+    });
+    if (flag) {
+      Alert.alert('', 'You already booked this seat for the flight!');
       return;
     }
     await storeData(
-      {date: props.scheduleDate, time: props.scheduleTime, seat: selectedSeat},
-      props.flightName,
+      {
+        flightName: props.flightName,
+        date: props.scheduleDate,
+        time: props.scheduleTime,
+        seat: selectedSeat,
+        name: name,
+      },
+      'myFlights',
     );
     setShowQR(true);
   };
-  const storeData = async (value: any, key: string) => {
-    try {
-      const jsonValue = JSON.stringify(value);
-      await AsyncStorage.setItem(key, jsonValue);
-    } catch (e) {
-      // saving error
-    }
-  };
-  const getData = async (key: string) => {
-    try {
-      const jsonValue = await AsyncStorage.getItem(key);
-      return jsonValue != null ? JSON.parse(jsonValue) : null;
-    } catch (e) {
-      // error reading value
-    }
-  };
 
+  const onBackdropPress = () => {
+    setSelectedSeat(-1);
+    setShowQR(false);
+    props.onBackdropPress;
+  };
   return (
-    <Dialog isVisible={props.isVisible} onBackdropPress={props.onBackdropPress}>
+    <Dialog isVisible={props.isVisible} onBackdropPress={onBackdropPress}>
       <Dialog.Title title={'Booking for Flight: ' + props.flightName} />
       <Divider color="black" />
 
