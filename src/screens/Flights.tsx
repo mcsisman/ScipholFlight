@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {Divider} from '@rneui/themed';
-import {convertDateToYYMMDD} from '../utils/DateHelper';
 import ActionMenu from '../components/ActionMenu';
-import {getRequestURL, Request} from '../utils/FlightRequest';
+import BookingDialog from '../components/BookingDialog';
+import {getRequestURL, getNextURL, getRequestObj} from '../utils/FlightRequest';
 import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
 import {
   FLIGHT_APP_KEY,
@@ -20,16 +20,21 @@ import {StyleSheet, SafeAreaView} from 'react-native';
 const Flights: React.FC = () => {
   console.log('RE-RENDER');
   const tabBarHeight = useBottomTabBarHeight();
-
+  const [bookingData, setBookingData] = useState({
+    flightName: '',
+    flightDate: '',
+    flightTime: '',
+  });
+  const [bookingIsVisible, setBookingIsVisible] = useState(false);
   const [flightList, setFlightList] = useState<Flight[]>([]);
-  const [requestParams, setRequestParams] = useState<Request>({});
 
   var dataProvider: DataProvider = new DataProvider(
     (r1, r2) => r1 !== r2,
   ).cloneWithRows(flightList);
 
-  //useEffect(() => fetchFlightList(getRequestURL(requestParams)), []);
-
+  const toggleBookingVisibility = () => {
+    setBookingIsVisible(!bookingIsVisible);
+  };
   const layoutProvider = new LayoutProvider(
     i => {
       return i;
@@ -43,18 +48,22 @@ const Flights: React.FC = () => {
     },
   );
 
+  const onPressBook = (name: string, date: string, time: string) => {
+    bookingData.flightName = name;
+    bookingData.flightDate = date;
+    bookingData.flightTime = time;
+    console.log('nameÇ:' + bookingData.flightName);
+    toggleBookingVisibility();
+  };
   const onPressSearch = (
     flightDirection: string,
     fromDate: Date,
     toDate: Date,
   ) => {
-    requestParams.flightDirection = flightDirection;
-    requestParams.page = '0';
-    requestParams.fromScheduleDate = convertDateToYYMMDD(fromDate);
-    requestParams.toScheduleDate = convertDateToYYMMDD(toDate);
     setFlightList([]);
-    fetchFlightList(getRequestURL(requestParams));
-    return '';
+    dataProvider = new DataProvider((r1, r2) => false).cloneWithRows([]);
+    let newRequest = getRequestObj(flightDirection, fromDate, toDate);
+    fetchFlightList(getRequestURL(newRequest));
   };
 
   const fetchFlightList = (URL: string) => {
@@ -91,24 +100,10 @@ const Flights: React.FC = () => {
       .catch(error => console.log('err:' + error));
   };
 
-  const getNextURL = (links: string) => {
-    let linkArr;
-    linkArr = links?.split(', ');
-    let newURL = '';
-    linkArr?.map((element: string) => {
-      if (element.includes('next')) {
-        newURL = element.substring(
-          element.indexOf('<') + 1,
-          element.indexOf('>'),
-        );
-      }
-    });
-    return newURL;
-  };
-
   const rowRenderer = (type: any, data: Flight) => {
     return (
       <FlightListItem
+        onPressBook={(name, date, time) => onPressBook(name, date, time)}
         height={WINDOW_HEIGHT / 12}
         width={WINDOW_WIDTH}
         flightDirection={data.flightDirection}
@@ -119,6 +114,8 @@ const Flights: React.FC = () => {
       />
     );
   };
+
+  console.log('size:' + dataProvider.getSize());
   return (
     <SafeAreaView style={styles.container}>
       <FlightListHeader width={WINDOW_WIDTH} height={WINDOW_HEIGHT / 15} />
@@ -132,6 +129,13 @@ const Flights: React.FC = () => {
         />
       )}
       <ActionMenu onPressSearch={onPressSearch} />
+      <BookingDialog
+        flightName={bookingData.flightName}
+        scheduleDate={bookingData.flightDate}
+        scheduleTime={bookingData.flightTime}
+        isVisible={bookingIsVisible}
+        onBackdropPress={() => toggleBookingVisibility()}
+      />
     </SafeAreaView>
   );
 };

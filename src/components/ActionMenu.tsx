@@ -26,7 +26,7 @@ import {
 } from 'react-native';
 
 interface ActionMenuProps {
-  onPressSearch(flightDirection: string, fromDate: Date, toDate: Date): string;
+  onPressSearch(flightDirection: string, fromDate: Date, toDate: Date): void;
 }
 const ActionMenu: React.FC<ActionMenuProps> = (props: ActionMenuProps) => {
   const [speedDialOpen, setSpeedDialOpen] = useState(false);
@@ -34,8 +34,6 @@ const ActionMenu: React.FC<ActionMenuProps> = (props: ActionMenuProps) => {
 
   const toggleFilterDialog = () => {
     setFilterDialogVisible(!filterDialogVisible);
-
-    return '';
   };
   const onPressSearch = (
     flightDirection: string,
@@ -44,7 +42,6 @@ const ActionMenu: React.FC<ActionMenuProps> = (props: ActionMenuProps) => {
   ) => {
     props.onPressSearch(flightDirection, fromDate, toDate);
     toggleFilterDialog();
-    return '';
   };
   return (
     <SpeedDial

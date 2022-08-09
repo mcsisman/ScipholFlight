@@ -16,15 +16,15 @@ interface FlightListItemProps {
   flightNumber: string;
   scheduleDate: string;
   scheduleTime: string;
+  onPressBook(
+    flightName: string,
+    scheduleDate: string,
+    scheduleTime: string,
+  ): void;
 }
 const FlightListItem: React.FC<FlightListItemProps> = (
   props: FlightListItemProps,
 ) => {
-  const onPressBook = () => {
-    console.log('ON PRESS BOOK');
-    console.log(props.flightNumber);
-  };
-
   const onPressDetails = () => {
     console.log('ON PRESS DETAILS');
     console.log(props.flightNumber);
@@ -58,7 +58,13 @@ const FlightListItem: React.FC<FlightListItemProps> = (
 
       <TouchableOpacity
         activeOpacity={1}
-        onPress={onPressBook}
+        onPress={() =>
+          props.onPressBook(
+            props.flightName,
+            props.scheduleDate,
+            props.scheduleTime,
+          )
+        }
         style={styles.detailsButton}>
         <MaterialIcons
           name={'add-shopping-cart'}

@@ -7,8 +7,8 @@ import {Text} from '@rneui/base';
 
 interface FilterDialogProps {
   isVisible: boolean;
-  onBackdropPress(): string;
-  onPressSearch(flightDirection: string, fromDate: Date, toDate: Date): string;
+  onBackdropPress(): void;
+  onPressSearch(flightDirection: string, fromDate: Date, toDate: Date): void;
 }
 
 const FilterDialog: React.FC<FilterDialogProps> = (
