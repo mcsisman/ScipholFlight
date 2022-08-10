@@ -8,7 +8,7 @@ import {getData} from '../utils/LocalStorage';
 import {Flight} from '../utils/Flight';
 import {useIsFocused} from '@react-navigation/native';
 
-import {StyleSheet, SafeAreaView} from 'react-native';
+import {StyleSheet, SafeAreaView, Text} from 'react-native';
 
 const MyFlights: React.FC = () => {
   const [flightList, setFlightList] = useState<Flight[]>([]);
@@ -16,6 +16,7 @@ const MyFlights: React.FC = () => {
   useEffect(() => {
     const fetchFlightList = async () => {
       let arr = await getData('myFlights');
+      if (!arr) return;
       setFlightList(arr);
       dataProvider = new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(
         flightList,
@@ -66,6 +67,7 @@ const MyFlights: React.FC = () => {
           rowRenderer={rowRenderer}
         />
       )}
+      {dataProvider.getSize() == 0 && <Text> No data!</Text>}
     </SafeAreaView>
   );
 };

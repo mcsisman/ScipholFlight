@@ -1,17 +1,22 @@
 import React, {useEffect, useState} from 'react';
 import {BarCodeScanner} from 'expo-barcode-scanner';
-import {Dialog, Button, Divider} from '@rneui/themed';
+import {Dialog, Divider} from '@rneui/themed';
 import {StyleSheet} from 'react-native';
+import {getData} from '../../utils/LocalStorage';
+import DetailsDialog from './DetailsDialog';
 
 interface QRScannerDialogProps {
   isVisible?: boolean;
   onBackdropPress?(): void;
+  onFoundFlight?(flight: any): any;
 }
 const QRScannerDialog: React.FC<QRScannerDialogProps> = (
   props: QRScannerDialogProps,
 ) => {
   const [hasPermission, setHasPermission] = useState(false);
   const [scanned, setScanned] = useState(false);
+  const [scannedFlight, setScannedFlight] = useState<any>();
+  const [detailsIsVisible, setDetailsIsVisible] = useState(false);
 
   useEffect(() => {
     const getBarCodeScannerPermissions = async () => {
@@ -22,10 +27,21 @@ const QRScannerDialog: React.FC<QRScannerDialogProps> = (
   }, []);
 
   const handleBarCodeScanned = ({type, data}: any) => {
+    findScannedFlight(data);
+  };
+
+  const findScannedFlight = async (flightName: string) => {
+    let bookedFlights = await getData('myFlights');
+    let flight;
     setScanned(true);
-    console.log(
-      `Bar code with type ${type} and data ${data} has been scanned!`,
-    );
+    await bookedFlights?.find((element: any) => {
+      element.flightName === flightName;
+      flight = element;
+    });
+    if (flight) {
+      setScannedFlight(flight);
+      setDetailsIsVisible(true);
+    }
   };
 
   return (
@@ -37,10 +53,17 @@ const QRScannerDialog: React.FC<QRScannerDialogProps> = (
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={styles.QRScanner}
       />
-
-      {scanned && (
-        <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />
-      )}
+      <DetailsDialog
+        seat={scannedFlight?.seat}
+        bookedBy={scannedFlight?.name}
+        date={scannedFlight?.date}
+        time={scannedFlight?.time}
+        flightName={scannedFlight?.flightName}
+        isVisible={detailsIsVisible}
+        onBackdropPress={() => {
+          setDetailsIsVisible(false), setScanned(false);
+        }}
+      />
     </Dialog>
   );
 };

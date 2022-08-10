@@ -6,7 +6,13 @@ import {Flight} from '../../utils/Flight';
 interface DetailsDialogProps {
   isVisible?: boolean;
   onBackdropPress?(): void;
-  flightData?: Flight;
+  terminal?: number;
+  gate?: string;
+  date?: string;
+  time?: string;
+  seat?: string;
+  flightName?: string;
+  bookedBy?: string;
 }
 const DetailsDialog: React.FC<DetailsDialogProps> = (
   props: DetailsDialogProps,
@@ -14,27 +20,29 @@ const DetailsDialog: React.FC<DetailsDialogProps> = (
   return (
     <Dialog isVisible={props.isVisible} onBackdropPress={props.onBackdropPress}>
       <Dialog.Title
-        title={'Details of Flight ' + props.flightData?.flightName}
+        title={
+          props.seat === '' || props.seat === undefined
+            ? 'Details of Flight ' + props.flightName
+            : 'Details of Booked Flight:' + props.flightName
+        }
       />
       <Divider color="black" />
 
-      {props.flightData?.terminal && (
-        <Text style={styles.textStyle}>
-          {'Terminal: ' + props.flightData?.terminal}
-        </Text>
+      {props.terminal && (
+        <Text style={styles.textStyle}>{'Terminal: ' + props.terminal}</Text>
       )}
-      {props.flightData?.gate && (
-        <Text style={styles.textStyle}>
-          {'Gate: ' + props.flightData?.gate}
-        </Text>
+      {props.gate && (
+        <Text style={styles.textStyle}>{'Gate: ' + props.gate}</Text>
+      )}
+      {props.seat != '' && props.seat != undefined && (
+        <Text style={styles.textStyle}>{'Seat: ' + props.seat}</Text>
+      )}
+      {props.bookedBy != '' && props.bookedBy != undefined && (
+        <Text style={styles.textStyle}>{'Booked by: ' + props.bookedBy}</Text>
       )}
 
-      <Text style={styles.textStyle}>
-        {'Scheduled Date: ' + props.flightData?.scheduleDate}
-      </Text>
-      <Text style={styles.textStyle}>
-        {'Scheduled Time: ' + props.flightData?.scheduleTime}
-      </Text>
+      <Text style={styles.textStyle}>{'Scheduled Date: ' + props.date}</Text>
+      <Text style={styles.textStyle}>{'Scheduled Time: ' + props.time}</Text>
     </Dialog>
   );
 };

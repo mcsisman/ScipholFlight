@@ -24,10 +24,15 @@ import FlightListItem from '../components/list_components/FlightListItem';
 import FlightListHeader from '../components/list_components/FlightListHeader';
 import {Flight} from '../utils/Flight';
 
-import {ActivityIndicator, View, StyleSheet, SafeAreaView} from 'react-native';
+import {
+  ActivityIndicator,
+  View,
+  StyleSheet,
+  SafeAreaView,
+  Alert,
+} from 'react-native';
 
 const Flights: React.FC = () => {
-  console.log('RE-RENDER');
   const tabBarHeight = useBottomTabBarHeight();
   const [bookingData, setBookingData] = useState({
     flightName: '',
@@ -40,6 +45,7 @@ const Flights: React.FC = () => {
   const [isListLoading, setIsListLoading] = useState(false);
   const [detailsIsVisible, setDetailsIsVisible] = useState(false);
   const [flightDetails, setFlightDetails] = useState<Flight>();
+  const [searchActive, setSearchActive] = useState(false);
 
   const dataProvider = useMemo(() => {
     return new DataProvider((r1, r2) => {
@@ -76,7 +82,6 @@ const Flights: React.FC = () => {
     bookingData.flightName = name;
     bookingData.flightDate = date;
     bookingData.flightTime = time;
-    console.log('nameÇ:' + bookingData.flightName);
     toggleBookingVisibility();
   };
   const onPressSearch = (
@@ -84,12 +89,17 @@ const Flights: React.FC = () => {
     fromDate: Date,
     toDate: Date,
   ) => {
+    if (searchActive) {
+      Alert.alert('', 'Please wait for previous filtering to end!');
+      return;
+    }
     let emptyFlightList: Flight[] = [];
     flightList.length = 0;
     setFlightList(emptyFlightList);
     let newRequest = getRequestObj(flightDirection, fromDate, toDate);
     setIsListLoading(true);
     fetchFlightList(getRequestURL(newRequest));
+    setSearchActive(true);
   };
 
   const onPressDetails = async (flightId: string) => {
@@ -97,10 +107,10 @@ const Flights: React.FC = () => {
     setDetailsIsVisible(true);
   };
   const fetchFlightList = (URL: string) => {
-    console.log('URL:' + URL);
     if (URL == '') {
       setIsListLoading(false);
       setFlightList(flightList);
+      setSearchActive(false);
       return;
     }
 
@@ -144,9 +154,6 @@ const Flights: React.FC = () => {
     );
   };
 
-  console.log('size2:' + dataProvider.getSize());
-  console.log('size3:' + newDataProvider.getSize());
-  console.log('arr:' + flightList.length);
   return (
     <SafeAreaView style={styles.container}>
       <FlightListHeader width={WINDOW_WIDTH} height={WINDOW_HEIGHT / 15} />
@@ -183,7 +190,11 @@ const Flights: React.FC = () => {
       />
 
       <DetailsDialog
-        flightData={flightDetails}
+        terminal={flightDetails?.terminal}
+        gate={flightDetails?.gate}
+        date={flightDetails?.scheduleDate}
+        time={flightDetails?.scheduleTime}
+        flightName={flightDetails?.flightName}
         isVisible={detailsIsVisible}
         onBackdropPress={() => setDetailsIsVisible(false)}
       />
