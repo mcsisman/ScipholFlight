@@ -1,6 +1,7 @@
 # ScipholFlight
  <h2>Minimum Requirements</h2>
- Anroid: minSdkVersion: 21\
+ Anroid: minSdkVersion: 21
+ 
  iOS: 11.0
  
  <h2>3rd Party Packages</h2>
@@ -55,8 +56,9 @@ Past and future flights can be displayed on My Flights tab
 
 <img src="https://user-images.githubusercontent.com/61357620/183948085-109d7646-3cf5-4ecb-8223-dd8f39254eda.png" width="225" height="400"/>
 
+<h2>Notes</h2>
 
-
+- Saving QR codes to camera roll is not possible due to a @react-native-community/cameraroll issue.
  
 
 
