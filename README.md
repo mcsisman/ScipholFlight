@@ -59,7 +59,7 @@ Past and future flights can be displayed on My Flights tab
 <h2>Notes</h2>
 
 - Saving QR codes to camera roll is not possible due to a @react-native-community/cameraroll issue.
-- QR Code Scanner isn't tested on iOS
+- QR Code Scanner isn't tested on iOS due to an issue with expo-Barcode-Scanner and when Xcode is <v13.
  
 
 
