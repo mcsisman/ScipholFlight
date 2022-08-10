@@ -1,6 +1,5 @@
 import React from 'react';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 interface MyFlightListItemProps {
   height?: number;
   width?: number;

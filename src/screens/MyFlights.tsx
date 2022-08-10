@@ -1,18 +1,28 @@
 import React, {useState, useEffect} from 'react';
 import {Divider} from '@rneui/themed';
 import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
-import MyFlightsListHeader from '../components/MyFlightsListHeader';
+import MyFlightsListHeader from '../components/list_components/MyFlightsListHeader';
 import {WINDOW_WIDTH, WINDOW_HEIGHT} from '../utils/utils';
-import MyFlightsListItem from '../components/MyFlightsListItem';
+import MyFlightsListItem from '../components/list_components/MyFlightsListItem';
 import {getData} from '../utils/LocalStorage';
 import {Flight} from '../utils/Flight';
+import {useIsFocused} from '@react-navigation/native';
 
 import {StyleSheet, SafeAreaView} from 'react-native';
 
 const MyFlights: React.FC = () => {
-  console.log('RE-RENDER');
-
   const [flightList, setFlightList] = useState<Flight[]>([]);
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    const fetchFlightList = async () => {
+      let arr = await getData('myFlights');
+      setFlightList(arr);
+      dataProvider = new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(
+        flightList,
+      );
+    };
+    fetchFlightList();
+  }, [isFocused]);
 
   var dataProvider: DataProvider = new DataProvider(
     (r1, r2) => r1 !== r2,
@@ -30,20 +40,6 @@ const MyFlights: React.FC = () => {
       }
     },
   );
-  useEffect(() => {
-    const fetchFlightList = async () => {
-      let arr = await getData('myFlights');
-
-      setFlightList(arr);
-
-      console.log('flight list: ' + flightList);
-      dataProvider = new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(
-        flightList,
-      );
-    };
-    fetchFlightList();
-  }, []);
-
   const rowRenderer = (type: any, data: any) => {
     return (
       <MyFlightsListItem

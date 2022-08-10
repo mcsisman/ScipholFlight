@@ -1,8 +1,8 @@
-import React, {useState, type PropsWithChildren} from 'react';
+import React, {useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {Dialog, Button, Divider, Input} from '@rneui/themed';
 import {Alert, StyleSheet, Text, View} from 'react-native';
-import {storeData, getData} from '../utils/LocalStorage';
+import {storeData, getData} from '../../utils/LocalStorage';
 import QRCode from 'react-native-qrcode-svg';
 
 interface BookingDialogProps {
@@ -28,7 +28,7 @@ const BookingDialog: React.FC<BookingDialogProps> = (
     return seatArray;
   };
 
-  const dropdownData = seatArray(100);
+  const dropdownData = seatArray(50);
   const onPressBookingComplete = async () => {
     let myFlightList = await getData('myFlights');
     if (name === '' || selectedSeat === -1) {
@@ -63,7 +63,7 @@ const BookingDialog: React.FC<BookingDialogProps> = (
   const onBackdropPress = () => {
     setSelectedSeat(-1);
     setShowQR(false);
-    props.onBackdropPress;
+    props.onBackdropPress();
   };
   return (
     <Dialog isVisible={props.isVisible} onBackdropPress={onBackdropPress}>

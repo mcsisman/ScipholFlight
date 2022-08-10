@@ -1,4 +1,6 @@
 import {convertDateToYYMMDD} from './DateHelper';
+import {FLIGHT_APP_KEY, FLIGHT_APP_ID} from './utils';
+
 export interface Request {
   scheduleDate?: string;
   scheduleTime?: string;
@@ -16,6 +18,32 @@ export interface Request {
   fromScheduleDate?: string;
   toScheduleDate?: string;
 }
+
+export const getSingleFlightURL = (id: string) => {
+  return 'https://api.schiphol.nl/public-flights/flights/' + id;
+};
+export const fetchSingleFlight = async (URL: string) => {
+  let result: any;
+  await fetch(URL, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      app_id: FLIGHT_APP_ID,
+      app_key: FLIGHT_APP_KEY,
+      ResourceVersion: 'v4',
+    },
+  })
+    .then(response => {
+      return response.json();
+    })
+    .then(data => {
+      result = data;
+      return data;
+    })
+    .catch(error => console.log('err:' + error));
+  return result;
+};
 
 export const getRequestURL = (requestObj: Request) => {
   let URL = 'https://api.schiphol.nl/public-flights/flights?';
@@ -52,7 +80,11 @@ export const getRequestObj = (
 ) => {
   let request: Request = {};
 
-  if (flightDirection != undefined || flightDirection != 'B') {
+  if (
+    flightDirection != undefined &&
+    flightDirection != 'B' &&
+    flightDirection != ''
+  ) {
     request.flightDirection = flightDirection;
   }
   request.page = '0';

@@ -1,5 +1,5 @@
-import React, {useEffect, useState, useMemo} from 'react';
-import {Divider, SpeedDial} from '@rneui/themed';
+import React, {useState} from 'react';
+import {SpeedDial} from '@rneui/themed';
 
 import FilterDialog from './FilterDialog';
 
@@ -55,7 +55,5 @@ const ActionMenu: React.FC<ActionMenuProps> = (props: ActionMenuProps) => {
     </SpeedDial>
   );
 };
-
-const styles = StyleSheet.create({});
 
 export default ActionMenu;

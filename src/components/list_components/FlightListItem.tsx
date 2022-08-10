@@ -1,13 +1,6 @@
 import React from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 interface FlightListItemProps {
   height?: number;
   width?: number;
@@ -16,22 +9,29 @@ interface FlightListItemProps {
   flightNumber: string;
   scheduleDate: string;
   scheduleTime: string;
+  flightId: string;
   onPressBook(
     flightName: string,
     scheduleDate: string,
     scheduleTime: string,
   ): void;
+  onPressDetails(flightId: string): void;
 }
 const FlightListItem: React.FC<FlightListItemProps> = (
   props: FlightListItemProps,
 ) => {
-  const onPressDetails = () => {
-    console.log('ON PRESS DETAILS');
-    console.log(props.flightNumber);
+  const onPressBook = () => {
+    if (props.flightDirection == 'D') {
+      props.onPressBook(
+        props.flightName,
+        props.scheduleDate,
+        props.scheduleTime,
+      );
+    }
   };
   return (
     <TouchableOpacity
-      onPress={onPressDetails}
+      onPress={() => props.onPressDetails(props.flightId)}
       activeOpacity={1}
       style={[styles.container]}>
       <View style={styles.directionContainer}>
@@ -58,13 +58,7 @@ const FlightListItem: React.FC<FlightListItemProps> = (
 
       <TouchableOpacity
         activeOpacity={1}
-        onPress={() =>
-          props.onPressBook(
-            props.flightName,
-            props.scheduleDate,
-            props.scheduleTime,
-          )
-        }
+        onPress={() => onPressBook()}
         style={styles.detailsButton}>
         <MaterialIcons
           name={'add-shopping-cart'}

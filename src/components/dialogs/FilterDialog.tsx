@@ -1,7 +1,7 @@
-import React, {useState, type PropsWithChildren} from 'react';
+import React, {useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {Dialog, Button, Icon, Divider, FAB} from '@rneui/themed';
-import {StyleSheet, View, Platform} from 'react-native';
+import {StyleSheet, View, Platform, Alert} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Text} from '@rneui/base';
 
@@ -26,6 +26,24 @@ const FilterDialog: React.FC<FilterDialogProps> = (
     {label: 'Departure', value: 'Departure'},
     {label: 'Both', value: 'Both'},
   ];
+
+  const onPressSearch = () => {
+    let differenceBetweenDates =
+      (toDate.getTime() - fromDate.getTime()) / (1000 * 3600 * 24);
+    if (differenceBetweenDates > 2) {
+      Alert.alert(
+        '',
+        'The date interval is not valid. Allowed days between the from and to dates is 3',
+      );
+    } else if (differenceBetweenDates < 0) {
+      Alert.alert(
+        '',
+        'The date interval is not valid. To date must be bigger than or equal to from date',
+      );
+    } else {
+      props.onPressSearch(flightDirection.substring(0, 1), fromDate, toDate);
+    }
+  };
   return (
     <Dialog isVisible={props.isVisible} onBackdropPress={props.onBackdropPress}>
       <Dialog.Title title="Filter" />
@@ -133,9 +151,7 @@ const FilterDialog: React.FC<FilterDialogProps> = (
       <Divider color="black" />
 
       <FAB
-        onPress={() =>
-          props.onPressSearch(flightDirection.substring(0, 1), fromDate, toDate)
-        }
+        onPress={() => onPressSearch()}
         color="steelblue"
         style={{marginTop: 15}}
         icon={{name: 'search', color: 'white'}}

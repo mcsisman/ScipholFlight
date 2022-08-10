@@ -1,11 +1,18 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {Divider} from '@rneui/themed';
-import ActionMenu from '../components/ActionMenu';
-import BookingDialog from '../components/BookingDialog';
-import {getRequestURL, getNextURL, getRequestObj} from '../utils/FlightRequest';
+import ActionMenu from '../components/dialogs/ActionMenu';
+import BookingDialog from '../components/dialogs/BookingDialog';
+import {
+  getRequestURL,
+  getNextURL,
+  getRequestObj,
+  getSingleFlightURL,
+  fetchSingleFlight,
+} from '../utils/FlightRequest';
 import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
-import QRScannerDialog from '../components/QRScannerDialog';
+import QRScannerDialog from '../components/dialogs/QRScannerDialog';
+import DetailsDialog from '../components/dialogs/DetailsDialog';
 
 import {
   FLIGHT_APP_KEY,
@@ -13,11 +20,11 @@ import {
   WINDOW_WIDTH,
   WINDOW_HEIGHT,
 } from '../utils/utils';
-import FlightListItem from '../components/FlightListItem';
-import FlightListHeader from '../components/FlightListHeader';
+import FlightListItem from '../components/list_components/FlightListItem';
+import FlightListHeader from '../components/list_components/FlightListHeader';
 import {Flight} from '../utils/Flight';
 
-import {StyleSheet, SafeAreaView} from 'react-native';
+import {ActivityIndicator, View, StyleSheet, SafeAreaView} from 'react-native';
 
 const Flights: React.FC = () => {
   console.log('RE-RENDER');
@@ -30,10 +37,19 @@ const Flights: React.FC = () => {
   const [bookingIsVisible, setBookingIsVisible] = useState(false);
   const [flightList, setFlightList] = useState<Flight[]>([]);
   const [QRScannerIsVisible, setQRScannerVisible] = useState(false);
+  const [isListLoading, setIsListLoading] = useState(false);
+  const [detailsIsVisible, setDetailsIsVisible] = useState(false);
+  const [flightDetails, setFlightDetails] = useState<Flight>();
 
-  var dataProvider: DataProvider = new DataProvider(
-    (r1, r2) => r1 !== r2,
-  ).cloneWithRows(flightList);
+  const dataProvider = useMemo(() => {
+    return new DataProvider((r1, r2) => {
+      return r1.id !== r2.id;
+    });
+  }, []);
+
+  const newDataProvider = useMemo(() => {
+    return dataProvider.cloneWithRows(flightList);
+  }, [flightList, dataProvider]);
 
   const toggleBookingVisibility = () => {
     setBookingIsVisible(!bookingIsVisible);
@@ -68,19 +84,22 @@ const Flights: React.FC = () => {
     fromDate: Date,
     toDate: Date,
   ) => {
-    setFlightList([]);
-    dataProvider = new DataProvider((r1, r2) => false).cloneWithRows([]);
+    let emptyFlightList: Flight[] = [];
+    flightList.length = 0;
+    setFlightList(emptyFlightList);
     let newRequest = getRequestObj(flightDirection, fromDate, toDate);
+    setIsListLoading(true);
     fetchFlightList(getRequestURL(newRequest));
   };
 
+  const onPressDetails = async (flightId: string) => {
+    setFlightDetails(await fetchSingleFlight(getSingleFlightURL(flightId)));
+    setDetailsIsVisible(true);
+  };
   const fetchFlightList = (URL: string) => {
     console.log('URL:' + URL);
-
     if (URL == '') {
-      dataProvider = new DataProvider((r1, r2) => r1 !== r2).cloneWithRows(
-        flightList,
-      );
+      setIsListLoading(false);
       setFlightList(flightList);
       return;
     }
@@ -111,6 +130,8 @@ const Flights: React.FC = () => {
   const rowRenderer = (type: any, data: Flight) => {
     return (
       <FlightListItem
+        onPressDetails={onPressDetails}
+        flightId={data.id}
         onPressBook={(name, date, time) => onPressBook(name, date, time)}
         height={WINDOW_HEIGHT / 12}
         width={WINDOW_WIDTH}
@@ -123,18 +144,26 @@ const Flights: React.FC = () => {
     );
   };
 
-  console.log('size:' + dataProvider.getSize());
+  console.log('size2:' + dataProvider.getSize());
+  console.log('size3:' + newDataProvider.getSize());
+  console.log('arr:' + flightList.length);
   return (
     <SafeAreaView style={styles.container}>
       <FlightListHeader width={WINDOW_WIDTH} height={WINDOW_HEIGHT / 15} />
       <Divider color={'black'} />
-      {dataProvider.getSize() != 0 && (
+      {newDataProvider.getSize() != 0 && (
         <RecyclerListView
           style={{flex: 1}}
           layoutProvider={layoutProvider}
-          dataProvider={dataProvider}
+          dataProvider={newDataProvider}
           rowRenderer={rowRenderer}
         />
+      )}
+
+      {isListLoading && (
+        <View style={{flex: 1, justifyContent: 'center'}}>
+          <ActivityIndicator size="large" color="steelblue" />
+        </View>
       )}
       <ActionMenu
         onPressQRButton={() => setQRScannerVisible(true)}
@@ -151,6 +180,12 @@ const Flights: React.FC = () => {
       <QRScannerDialog
         isVisible={QRScannerIsVisible}
         onBackdropPress={toggleQRScannerVisibility}
+      />
+
+      <DetailsDialog
+        flightData={flightDetails}
+        isVisible={detailsIsVisible}
+        onBackdropPress={() => setDetailsIsVisible(false)}
       />
     </SafeAreaView>
   );

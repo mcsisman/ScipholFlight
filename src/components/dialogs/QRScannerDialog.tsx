@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {BarCodeScanner} from 'expo-barcode-scanner';
-import {Dialog, Button, Divider, Input} from '@rneui/themed';
-import {Alert, StyleSheet, Text, View} from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
+import {Dialog, Button, Divider} from '@rneui/themed';
+import {StyleSheet} from 'react-native';
 
 interface QRScannerDialogProps {
   isVisible?: boolean;

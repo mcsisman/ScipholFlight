@@ -24,7 +24,7 @@ const MyFlightsListHeader: React.FC<MyFlightsListHeaderProps> = (
       <Divider orientation="vertical" />
 
       <View style={styles.userNameContainer}>
-        <Text>{'Name'} </Text>
+        <Text>{'Booked by'} </Text>
       </View>
       <Divider orientation="vertical" />
       <View style={styles.dateTimeContainer}>
